@@ -1,0 +1,15 @@
+from transformers import BertTokenizer, BertForSequenceClassification
+import torch
+
+model_path = "model/bert_model"
+tokenizer = BertTokenizer.from_pretrained(model_path)
+model = BertForSequenceClassification.from_pretrained(model_path)
+
+def predict_fake_news(text):
+    inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=512)
+    with torch.no_grad():
+        outputs = model(**inputs)
+    logits = outputs.logits
+    prediction = torch.argmax(logits, dim=1).item()
+    confidence = torch.softmax(logits, dim=1).max().item()
+    return {"label": "Fake" if prediction == 1 else "Real", "confidence": round(confidence * 100, 2)}
