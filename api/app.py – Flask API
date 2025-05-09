@@ -1,0 +1,16 @@
+from flask import Flask, request, jsonify
+from src.predict import predict_fake_news
+from src.db import save_news_article
+
+app = Flask(__name__)
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.json
+    article = data.get("text")
+    prediction = predict_fake_news(article)
+    save_news_article(article, prediction)
+    return jsonify(prediction)
+
+if __name__ == "__main__":
+    app.run(debug=True)
