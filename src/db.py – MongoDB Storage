@@ -1,0 +1,8 @@
+from pymongo import MongoClient
+
+def save_news_article(article, prediction):
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["news_db"]
+    collection = db["articles"]
+    record = {"text": article, **prediction}
+    collection.insert_one(record)
